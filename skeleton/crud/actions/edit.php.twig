@@ -1,68 +1,38 @@
 
     /**
 {% block phpdoc_method_header %}
-     * Displays a form to edit an existing {{ entity }} entity.
+     * Update {{ entity }} entity.
 {% endblock phpdoc_method_header %}
      *
-{% block phpdoc_method_annotations %}
-{% if 'annotation' == format %}
-     * @Route("/{id}/edit", name="{{ route_name_prefix }}_edit")
-     * @Method("GET")
-     * @Template()
-{% endif %}
-{% endblock phpdoc_method_annotations %}
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Modify a given '{{ entity }}'",
+     *  statusCodes = {
+     *    200 = "Returned when successful",
+     *    204 = "Returned when successful modifying a '{{ entity }}'",
+     *    400 = "Returned when the '{{ entity }}' being modified has validation errors",
+     *    404 = "Returned when the page is not found"
+     *  },
+     *  parameters={
+     *  //   TODO : add one line per field that is required to create a {{ entity }}
+        //   {"name"="__FIELD_NAME__", "dataType"="__FIELD_TYPE__", "required"=__FIELD_BOOLEAN_REQUIRED__, "description"="__FIELD_DESCRIPTION__"}
+     *  }
+     * )
+     * @Rest\View()     
+{% block phpdoc_method_annotations %}{% endblock phpdoc_method_annotations %}
      */
 {% block method_definition %}
-    public function editAction($id)
+    public function putAction({{ entity_class }} $id)
 {% endblock method_definition %}
     {
 {% block method_body %}
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('{{ bundle }}:{{ entity }}')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find {{ entity }} entity.');
-        }
-
-        $editForm = $this->createEditForm($entity);
-        $deleteForm = $this->createDeleteForm($id);
+        return $this->processForm($id);
 {% endblock method_body %}
 
 {% block method_return %}
-{% if 'annotation' == format %}
-        return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        );
-{% else %}
-        return $this->render('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:edit.html.twig', array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        ));
-{% endif %}
 {% endblock method_return %}
     }
 
 {% block form %}
-    /**
-    * Creates a form to edit a {{ entity }} entity.
-    *
-    * @param {{ entity_class }} $entity The entity
-    *
-    * @return \Symfony\Component\Form\Form The form
-    */
-    private function createEditForm({{ entity_class }} $entity)
-    {
-        $form = $this->createForm(new {{ entity_class }}Type(), $entity, array(
-            'action' => $this->generateUrl('{{ route_name_prefix }}_update', array('id' => $entity->getId())),
-            'method' => 'PUT',
-        ));
-
-        $form->add('submit', 'submit', array('label' => 'Update'));
-
-        return $form;
-    }
+    
 {% endblock form %}

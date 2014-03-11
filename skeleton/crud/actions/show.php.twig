@@ -1,50 +1,26 @@
 
     /**
 {% block phpdoc_method_header %}
-     * Finds and displays a {{ entity }} entity.
+     * Get a {{ entity }} entity.
 {% endblock phpdoc_method_header %}
-     *
-{% block phpdoc_method_annotations %}
-{% if 'annotation' == format %}
-     * @Route("/{id}", name="{{ route_name_prefix }}_show")
-     * @Method("GET")
-     * @Template()
-{% endif %}
-{% endblock phpdoc_method_annotations %}
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get a given '{{ entity }}'",
+     *  statusCodes = {
+     *    200 = "Returned when successful",
+     *    404 = "Returned when the page is not found"
+     *  }
+     * )
+     * @Rest\View()    
+{% block phpdoc_method_annotations %}{% endblock phpdoc_method_annotations %}
      */
 {% block method_definition %}
-    public function showAction($id)
+    public function getAction({{ entity_class }} $id)
 {% endblock method_definition %}
     {
 {% block method_body %}
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('{{ bundle }}:{{ entity }}')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find {{ entity }} entity.');
-        }
-{% if 'delete' in actions %}
-
-        $deleteForm = $this->createDeleteForm($id);
-{% endif %}
+        return $id;
 {% endblock method_body %}
 
-{% block method_return %}
-{% if 'annotation' == format %}
-        return array(
-            'entity'      => $entity,
-{% if 'delete' in actions %}
-            'delete_form' => $deleteForm->createView(),
-{% endif %}
-        );
-{% else %}
-        return $this->render('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:show.html.twig', array(
-            'entity'      => $entity,
-{% if 'delete' in actions %}
-            'delete_form' => $deleteForm->createView(),
-{%- endif %}
-        ));
-{% endif %}
-{% endblock method_return %}
+{% block method_return %}{% endblock method_return %}
     }

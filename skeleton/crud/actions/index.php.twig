@@ -1,36 +1,32 @@
 
     /**
 {% block phpdoc_method_header %}
-     * Lists all {{ entity }} entities.
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Lists '{{ entity }}'",
+     *  statusCodes = {
+     *    200 = "Returned when successful",
+     *    404 = "Returned when the page is not found"
+     *  }
+     * )
+     *
+     * @Rest\View()
 {% endblock phpdoc_method_header %}
      *
 {% block phpdoc_method_annotations %}
-{% if 'annotation' == format %}
-     * @Route("/", name="{{ route_name_prefix }}")
-     * @Method("GET")
-     * @Template()
-{% endif %}
 {% endblock phpdoc_method_annotations %}
      */
 {% block method_definition %}
-    public function indexAction()
+    public function cgetAction(ParamFetcher $paramFetcher)
 {% endblock method_definition %}
     {
 {% block method_body %}
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('{{ bundle }}:{{ entity }}')->findAll();
+        return $em->getRepository('{{ bundle }}:{{ entity }}')->findAll();
 {% endblock method_body %}
 
 {% block method_return %}
-{% if 'annotation' == format %}
-        return array(
-            'entities' => $entities,
-        );
-{% else %}
-        return $this->render('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:index.html.twig', array(
-            'entities' => $entities,
-        ));
-{% endif %}
+
 {% endblock method_return %}
     }
